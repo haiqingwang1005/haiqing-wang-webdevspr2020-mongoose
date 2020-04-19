@@ -7,13 +7,42 @@ import {
     CardFooter,
     CardTitle,
     Container,
-    Input
+    Input,
+    Alert
 } from "reactstrap";
 import '../styles/app.css';
 import {connect} from 'react-redux';
 import NotFound from "./notFound";
 import ShortenSpinner from "./shortenSpinner";
+import Axios from "axios";
+import ShortenError from "./shortenError";
+import {updateTinyUrl} from "../action/tinyAction";
 
+class UpdateResult extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        if (!this.props.updateStart) {
+            return <div/>
+        }
+        if (this.props.updateLoading) {
+            return <ShortenSpinner/>
+        }
+        if (this.props.updateComplete) {
+            return (
+                <Alert color="success">
+                    Update Success
+                </Alert>
+            );
+        }
+        if (this.props.updateError) {
+            return <ShortenError words={"There is an error editing URL."}/>
+        }
+        return super.render();
+    }
+}
 class EditBoard extends React.Component {
     constructor(props) {
         super(props);
@@ -55,11 +84,28 @@ class EditBoard extends React.Component {
     render() {
         const inputRef = React.createRef();
 
-        const onClick = () => {
-            const keywords = inputRef.current.value;
-            if (keywords && keywords.trim().length > 0) {
-                this.props.onEdit(keywords);
+        const onClickEdit = () => {
+            const newURL = inputRef.current.value;
+
+            console.log(newURL);
+            if (newURL && newURL.trim().length > 0) {
+                this.props.onEdit(newURL, this.props.shortenKey);
             }
+        };
+
+        const onClickDelete = () => {
+
+            return Axios.delete(`/api/shorten/${this.props.shortenKey}`)
+                .then(
+                    response => {
+                        console.log(response);
+                        window.location.href = '/';
+                    }
+                )
+                .catch(error => {
+                    console.log(error);
+                    console.alert('Delete Fail');
+                });
         };
 
         if (!this.props.edit || this.props.edit !== 'edit') {
@@ -81,24 +127,35 @@ class EditBoard extends React.Component {
                         <Input placeholder="Edit your URL" innerRef={inputRef} defaultValue={this.state.longUrl}/>
                     </CardBody>
                     <CardFooter className={"text-center"}>
-                        <Button color="primary" className={"float-center"} onClick={onClick}>Edit</Button> {' '}
-                        <Button color="danger" className={"float-center"} onClick={onClick}>Delete</Button>
+                        <Button color="primary" className={"float-center"} onClick={onClickEdit}>Edit</Button> {' '}
+                        <Button color="danger" className={"float-center"} onClick={onClickDelete}>Delete</Button>
                     </CardFooter>
                 </Card>
+                <UpdateResult updateError={this.props.updateError}
+                              updateStart={this.props.updateStart}
+                              updateComplete={this.props.updateComplete}
+                              updateLoading={this.props.updateLoading}/>
             </Container>
         );
     }
 }
-
+function mapStateToProps(state, props) {
+    return {
+        updateError: state.tiny.updateError,
+        updateStart: state.tiny.updateStart,
+        updateComplete: state.tiny.updateComplete,
+        updateLoading: state.tiny.updateLoading,
+    }
+}
 function mapDispatchToProps(dispatch, props) {
     return {
-        onEdit: (keywords) => {
-            console.log();
+        onEdit: (newUrl, shortenKey) => {
+            dispatch(updateTinyUrl(newUrl, shortenKey));
         }
     }
 }
 
 export default connect(
-    null,
+    mapStateToProps,
     mapDispatchToProps
 )(EditBoard)

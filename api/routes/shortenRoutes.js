@@ -12,4 +12,8 @@ router.post('/',
 
 router.get('/:shortenKey', shortenController.getOriginalUrl);
 
+router.put('/:shortenKey', shortenController.updateOriginalUrl);
+
+router.delete('/:shortenKey', shortenController.deleteUrl);
+
 module.exports = router;

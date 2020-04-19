@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {Card, CardTitle, CardBody, Container, CardText} from "reactstrap";
+import {Card, CardTitle, CardBody, Container, CardText, CardFooter, Button} from "reactstrap";
 import ShortenError from "./shortenError";
 import ShortenSpinner from "./shortenSpinner";
 
@@ -25,6 +25,11 @@ class ShortenResult extends React.Component {
                         <CardText>
                             <a href={this.props.tinyUrl}>{this.props.tinyUrl}</a>
                         </CardText>
+                        <CardFooter>
+                            <Button href={`${this.props.tinyUrl}/edit`}>
+                                Edit it
+                            </Button>
+                        </CardFooter>
                     </CardBody>
                 </Card>
             </Container>

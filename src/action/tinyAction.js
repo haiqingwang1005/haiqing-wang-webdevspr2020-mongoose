@@ -21,9 +21,46 @@ function receiveError(error) {
     };
 }
 
+function requestUpdateTinyUrl(shortenKey) {
+    return {
+        type: 'REQUEST_UPDATE_TINY_URL',
+        shortenKey: shortenKey,
+    };
+}
+
+function receiveUpdateTinyUrl() {
+    return {
+        type: 'RECEIVE_UPDATE_TINY_URL',
+    };
+}
+
+function receiveUpdateTinyUrlError() {
+    return {
+        type: 'RECEIVE_UPDATE_TINY_URL_ERROR',
+    };
+}
+
+export function updateTinyUrl(longUrl, index) {
+    return (dispatch) => {
+        console.log('updateTinyUrl');
+        dispatch(requestUpdateTinyUrl(index));
+        return Axios.put(`/api/shorten/${index}`, {newUrl: longUrl})
+            .then(
+                response => {
+                    console.log(response);
+                    dispatch(receiveUpdateTinyUrl());
+                }
+            )
+            .catch(error => {
+                console.log(error);
+                dispatch(receiveUpdateTinyUrlError())
+            });
+    }
+}
+
 export function fetchTinyUrl(longUrl, index) {
     return (dispatch) => {
-        dispatch(requestTinyUrl());
+        dispatch(requestTinyUrl(longUrl));
         console.log(`longUrl ${longUrl}`);
         return Axios.post(`/api/shorten`, {original: longUrl, index: index})
             .then(
