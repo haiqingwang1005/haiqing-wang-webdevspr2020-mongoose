@@ -1,0 +1,22 @@
+.searchTitle {
+    font-weight: bold;
+    padding-top: 15px;
+}
+
+.searchImage {
+    height: 30vh;
+}
+
+.book-error-container {
+    margin-top: 10vh;
+    margin-bottom: 10vh;
+}
+
+.book-search-author {
+    font-style: italic;
+    font-size: small;
+}
+
+.book-hover {
+    cursor: pointer;
+}
