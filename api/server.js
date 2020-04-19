@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 mongoose
-    .connect('mongodb+srv://haiqingwang1005:libra241705@cluster0-hrstn.mongodb.net/shorten?retryWrites=true&w=majority')
+    .connect(process.env.MONGODB_URI)
     .then(() => {
         app.listen(app.get('port'), function() {
             console.log('Starting server');
